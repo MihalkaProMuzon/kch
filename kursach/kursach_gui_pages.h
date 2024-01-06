@@ -3,19 +3,23 @@
 
 #include "kursach_manifest.h"
 
-Dictionary &cirilicChars = *(new Dictionary(6));
-String cirilicCharsString =  "{ \"ы\" : \"\x0A3\", \"hh\" : \"af\",  \"ь\" : \"\x0A4\",    \"э\" : \"\x0A5\",  \"ю\" : \"\x0A6\",    \"я\" : \"\x0A7\"  }";
-
-void kurshachGuiPagesInit(){
-  cirilicChars.jload(cirilicCharsString);
+void clearPage(byte x, byte y){
+  lcd.clear();
+  lcd.setCursor(x, y);
 }
 
-
-
 void pageStart(){
-  lcd.setCursor(0, 0);
-  lcd.print("фыва");
-  
+  clearPage(0,0);
+  lcd.print("CMEШAPИK 3500EXT");
+  lcd.setCursor(0, 1);
+  lcd.print("BBOД ДЛЯ CTAPTA");
+}
+
+void pageCompCountChoose(){
+  clearPage(0,0);
+  lcd.print("KOЛ-BO KOMПOHEHT.");
+  lcd.setCursor(12, 1);
+  lcd.print("2");
 }
 
 

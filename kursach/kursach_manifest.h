@@ -2,11 +2,10 @@
 #define kursach_manifest
 
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-#include <LiquidCrystal_I2C_Cyrillic.h>
-#include <Dictionary.h>
 
-LiquidCrystal_I2C_Cyrillic lcd(0x27, 16, 2);
+#define _LCD_TYPE 1
+#include <LCD_1602_RUS_ALL.h>
+LCD_1602_RUS lcd(0x27, 16, 2, 0);
 
 
 #endif

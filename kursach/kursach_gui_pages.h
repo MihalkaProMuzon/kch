@@ -2,6 +2,7 @@
 #define kursach_gui_pages
 
 #include "kursach_manifest.h"
+#include "kursach_utility.h"
 
 void clearPage(byte x, byte y){
   lcd.clear();

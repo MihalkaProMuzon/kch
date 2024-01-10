@@ -3,7 +3,7 @@
 
 #include "kursach_manifest.h"
 
-void kursachUtilyInit() {
+void kursachDevicesInit() {
   pinMode(LED_R_PIN, OUTPUT);
   digitalWrite(LED_R_PIN, HIGH);
   pinMode(LED_G_PIN, OUTPUT);
@@ -14,6 +14,9 @@ void kursachUtilyInit() {
   for (int i = 0; i < BUTTONS_COUNT; i++) {
     pinMode(BUTTONS[i]->pin, INPUT_PULLUP);
   }
+
+  lcd.init();
+  lcd.backlight();
 }
 
 bool butPressed(Button* but) {
@@ -37,6 +40,19 @@ void handleButs() {
     }
   }
 }
+
+typedef void (*FuncPtr)();
+
+
+template<typename T>
+FuncPtr bakeUpdateAndPrintFunc( void (*action)(), T *varible,byte posX,byte posY ){
+   return {
+    action();
+    lcd.setCursor(posX,posY);
+    lcd.print(String(*varible));
+  };
+}
+
 
 
 void doLightShow() {

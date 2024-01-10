@@ -1,31 +1,53 @@
-#include "kursach_gui_pages.h"
-#include "kursach_utility.h"
+#include "kursach_core.h"
+
+static void pageStart(){
+  lcd.clear(); lcd.setCursor(0, 0);
+  lcd.print("CMEШAPИK 3500EXT");
+  lcd.setCursor(0, 1);
+  lcd.print("BBOД ДЛЯ CTAPTA");
+
+  butEnter.ptrF = pageCompCountChoose;
+}
+
+static void pageCompCountChoose(){
+  lcd.clear(); lcd.setCursor(0, 0);
+
+  byte compCount = 0;
+  
+  lcd.print("KOЛ-BO KOMПOHEHT.");
+  lcd.setCursor(12, 1);
+  lcd.print(String(compCount));
+
+  butPositive.ptrF = [](){ 
+    componentsCount++;
+    lcd.setCursor(12, 1);
+    lcd.print(String(componentsCount));
+  };
+}
+
+void showGUI(byte gui){
+  switch(gui){
+    case(ENTER_PARAMS): pageStart(); break;
+  }
+}
+
+
 
 void setup() {
   Serial.begin(19200);
-  kursachUtilyInit();
-
-  lcd.init();
-  lcd.backlight();
-  pageStart();
-
-  
-  butNegative.ptrF = s0;
-  butPositive.ptrF = s1;
-  butEnter.ptrF = s2;
+  kursachDevicesInit();
+  setCoreGuiPtr(showGUI);
+  resetProgramm();
 }
-
-void s0(){ Serial.print("0"); }
-void s1(){ Serial.print("1"); }
-void s2(){ Serial.print("2"); }
 
 void loop() {
   handleButs();
-  if(butEnter.lastState == 0){
+  
+  /*if(butEnter.lastState == 0){
     doLightShow();  
   }else{
     lightsOff();  
-  }
+  }*/
   
   
 }

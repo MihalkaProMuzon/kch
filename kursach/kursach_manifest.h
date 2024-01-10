@@ -30,4 +30,8 @@ const byte BUTTONS_COUNT = sizeof(BUTTONS) / sizeof(BUTTONS[0]);
 
 
 
+#define GRAM 0
+
+#define ENTER_PARAMS 0
+
 #endif

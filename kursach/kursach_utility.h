@@ -41,19 +41,11 @@ void handleButs() {
   }
 }
 
-typedef void (*FuncPtr)();
-
-
 template<typename T>
-FuncPtr bakeUpdateAndPrintFunc( void (*action)(), T *varible,byte posX,byte posY ){
-   return {
-    action();
-    lcd.setCursor(posX,posY);
-    lcd.print(String(*varible));
-  };
+void lcdPrint(T varible,byte posX = 0,byte posY = 0){
+  lcd.setCursor(posX,posY);
+  lcd.print(String(varible) + "      ");
 }
-
-
 
 void doLightShow() {
   long lightTick = millis() / 75;

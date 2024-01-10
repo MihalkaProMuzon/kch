@@ -1,27 +1,27 @@
+#include "kursach_utility.h"
 #include "kursach_core.h"
 
+
 static void pageStart(){
-  lcd.clear(); lcd.setCursor(0, 0);
-  lcd.print("CMEШAPИK 3500EXT");
-  lcd.setCursor(0, 1);
-  lcd.print("BBOД ДЛЯ CTAPTA");
+  lcd.clear();
+  lcdPrint("CMEШAPИK 3500EXT");
+  lcdPrint("BBOД ДЛЯ CTAPTA",0,1);
 
   butEnter.ptrF = pageCompCountChoose;
 }
 
 static void pageCompCountChoose(){
-  lcd.clear(); lcd.setCursor(0, 0);
+  lcd.clear();
+  lcdPrint("KOЛ-BO KOMПOHEHT.");
+  lcdPrint(componentsCount,12,1);
 
-  byte compCount = 0;
-  
-  lcd.print("KOЛ-BO KOMПOHEHT.");
-  lcd.setCursor(12, 1);
-  lcd.print(String(compCount));
-
-  butPositive.ptrF = [](){ 
+  butNegative.ptrF = [](){
+    componentsCount--;
+    lcdPrint(componentsCount,12,1);
+  };
+  butPositive.ptrF = [](){
     componentsCount++;
-    lcd.setCursor(12, 1);
-    lcd.print(String(componentsCount));
+    lcdPrint(componentsCount,12,1);
   };
 }
 

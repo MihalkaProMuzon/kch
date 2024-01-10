@@ -13,7 +13,7 @@ LCD_1602_RUS lcd(0x27, 16, 2, 0);
 #define LED_B_PIN 5
 
 
-#define BUT_READ_DELAY_MS 35
+#define BUT_READ_DELAY_MS 45
 
 struct Button{
   byte pin;
@@ -25,7 +25,7 @@ Button butEnter = (Button) {2, HIGH, nullptr};
 Button butPositive = (Button) {3, HIGH, nullptr};
 Button butNegative = (Button) {4, HIGH, nullptr};
 
-const Button* BUTTONS[] = {&butEnter};
+Button* BUTTONS[] = {&butNegative, &butPositive, &butEnter};
 const byte BUTTONS_COUNT = sizeof(BUTTONS) / sizeof(BUTTONS[0]); 
 
 

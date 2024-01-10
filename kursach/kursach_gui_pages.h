@@ -22,7 +22,7 @@ void pageStart(){
   lcd.setCursor(0, 1);
   lcd.print("BBOД ДЛЯ CTAPTA");
 
-  butEnter.ptrF = pageCompCountChoose;
+  //butEnter.ptrF = pageCompCountChoose;
 }
 
 

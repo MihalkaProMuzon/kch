@@ -16,27 +16,25 @@ void kursachUtilyInit() {
   }
 }
 
-byte readButState(Button* but) {
+bool butPressed(Button* but) {
   if (digitalRead(but->pin) != but->lastState) {
     delay(BUT_READ_DELAY_MS);
-    return digitalRead(but->pin);
+    byte state = digitalRead(but->pin); 
+    bool pressed = (state == LOW) && (but->lastState == HIGH);
+    but->lastState = state;
+    return pressed;
   }
-  return but->lastState;
-}
-
-bool butWasPressed(Button* but) {
-  return (readButState(but) == LOW) && (but->lastState == HIGH);
+  return false;
 }
 
 void handleButs() {
   for (int i = 0; i < BUTTONS_COUNT; i++) {
     Button* but = BUTTONS[i];
-    if(butWasPressed(but)) {
+    if(butPressed(but)) {
       if(but->ptrF != nullptr){
         but->ptrF();
       }
-    }   
-    but->lastState = readButState(but);
+    }
   }
 }
 
@@ -47,6 +45,11 @@ void doLightShow() {
   digitalWrite(LED_R_PIN, lightTick % 4 == 0);
   digitalWrite(LED_G_PIN, lightTick % 5 == 0);
   digitalWrite(LED_B_PIN, lightTick % 6 == 0);
+}
+void lightsOff() {
+  digitalWrite(LED_R_PIN, HIGH);
+  digitalWrite(LED_G_PIN, HIGH);
+  digitalWrite(LED_B_PIN, HIGH);
 }
 
 

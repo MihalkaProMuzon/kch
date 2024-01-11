@@ -7,33 +7,63 @@
 
 static byte programmPosition = 0;  //  позиция програмыы
 
-static byte componentsCount;
-static byte* componentsWeights;
-static byte componentNumber;
+static byte componentsCount = 1;
+static int componentsWeights[MAX_COMP_COUNT] = {1,1,1,1,1};
+static int blendTime = 10;
+static bool paramsSetted = false;
 
-static byte tareWeights;
-static byte blendTime;
+static byte componentNumber;
+static byte tareWeight;
 
 
 void (*showGuiPtr)(byte gui);                     // Указатель на функцию отображения интерфейса для текущего этапа программы
-void setCoreGuiPtr(void(*shwGuiPtr)(byte gui)){
+void setCoreGuiShowPtr(void(*shwGuiPtr)(byte gui)){
   showGuiPtr = shwGuiPtr;
 }
 
-
-void resetProgramm(){
-  programmPosition = ENTER_PARAMS;
+static void nextStep(){
+  switch(programmPosition){
+    case(POS_ENTER_PARAMS): programmPosition = POS_WEIGHING; break; 
+    //case(POS_WEIGHING): programmPosition = POS_WEIGHING; break;
+  }
   showGuiPtr(programmPosition);
 }
 
-void setParametrs(byte compCount, byte compWeights[],int timeToBlend){
-  componentsCount = compCount;
-  componentsWeights = compWeights;
-  blendTime = timeToBlend;
-  componentNumber = 0;
+
+void setComponentsCount(byte compCount){
+  componentsCount = limit( compCount, 1, MAX_COMP_COUNT);
+}
+void setComponentWeight(byte compI,int weight){
+  componentsWeights[compI] = limit(weight, 1, MAX_COMP_WEIGHT);
+}
+void setBlendTime(int blendT){
+  blendTime = limit(blendT, 10, MAX_BLEND_TIME);
+}
+void confirmParametrs(){      //завершить ввод параметров и перейти к следующему шагу
+  paramsSetted = true;
 }
 
 
+
+void resetProgramm(){              // Стартовое положение (ввод параметров)
+  programmPosition = POS_ENTER_PARAMS;
+  paramsSetted = false;
+  showGuiPtr(programmPosition);
+}
+void enterParams(){
+  if(paramsSetted)
+    nextStep();
+}
+void weighing(){             // Начать изготовление (взвешивние -> смешивание)
+  
+}
+
+
+void runProgramm(){
+  switch(programmPosition){
+    case(POS_WEIGHING): weighing(); break;
+  }
+}
 
 
 

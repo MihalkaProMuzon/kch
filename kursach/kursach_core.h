@@ -50,7 +50,7 @@ void resetProgramm(){              // Стартовое положение (в�
   paramsSetted = false;
   showGuiPtr(programmPosition);
 }
-void enterParams(){
+void checkParams(){
   if(paramsSetted)
     nextStep();
 }
@@ -61,6 +61,7 @@ void weighing(){             // Начать изготовление (взве�
 
 void runProgramm(){
   switch(programmPosition){
+    case(POS_ENTER_PARAMS): checkParams(); break;
     case(POS_WEIGHING): weighing(); break;
   }
 }

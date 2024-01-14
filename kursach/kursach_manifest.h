@@ -2,16 +2,25 @@
 #define kursach_manifest
 
 #include <Wire.h>
-
-#define _LCD_TYPE 1
+#include "HX711.h"
+#define _LCD_TYPE 1 // LCD_1602_RUS_ALL тип 1 - через I2C, тип 2 - 8 контактов
 #include <LCD_1602_RUS_ALL.h>
-LCD_1602_RUS lcd(0x27, 16, 2, 0);
 
+LCD_1602_RUS lcd(0x27, 16, 2, 0);
 
 #define LED_R_PIN 7
 #define LED_G_PIN 6
 #define LED_B_PIN 5
 
+#define HX711_DT 8
+#define HX711_SCK 9
+#define HX711_MEASURE_COUNT 3          // кол-во измерений для среднего
+#define HX711_CALIBRATION_FACTOR 7.6   // колибровочный коэфф
+const float HX711_ADJUSTED_CALIBRATION_FACTOR = 7.6 / (HX711_MEASURE_COUNT/10);
+const float CONVERSION_K_GRAM    = 0.35274; // для перевода из унций в граммы
+
+
+HX711 scale;
 
 #define BUT_READ_DELAY_MS 45
 #define BUT_AFTERPUSH_DELAY_MS 400
@@ -32,7 +41,6 @@ Button butNegative = (Button) {4, HIGH, 0};
 Button* BUTTONS[] = {&butNegative, &butPositive, &butEnter};
 const byte BUTTONS_COUNT = sizeof(BUTTONS) / sizeof(BUTTONS[0]); 
 
-
 #define MAX_COMP_COUNT 5
 #define MAX_COMP_WEIGHT 1000
 #define WEIGHT_CHANGE_MUL 25
@@ -43,5 +51,7 @@ const byte BUTTONS_COUNT = sizeof(BUTTONS) / sizeof(BUTTONS[0]);
 
 #define POS_ENTER_PARAMS 0
 #define POS_WEIGHING 1
+
+#define CAUTION_COMP_WEIGHT 110
 
 #endif

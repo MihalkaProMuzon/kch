@@ -5,31 +5,28 @@
 #include "kursach_utility.h"
 
 
-static byte programmPosition = 0;  //  позиция програмыы
+byte programmPosition = 0;  //  позиция програмыы
 
-static byte componentsCount = 1;
-static int componentsWeights[MAX_COMP_COUNT] = {1,1,1,1,1};
-static int blendTime = 10;
-static bool paramsSetted = false;
+byte componentsCount = 1;
+int componentsWeights[MAX_COMP_COUNT] = {1,1,1,1,1};
+int blendTime = 10;
 
-static byte componentNumber;
-static byte tareWeight;
+byte componentNumber; // номер взвешиваниемого компонета
+float weight = 0;      // текущий вес на датчике
 
 
-void (*showGuiPtr)(byte gui);                     // Указатель на функцию отображения интерфейса для текущего этапа программы
+// Указатель на функцию отображения интерфейса для текущего этапа программы
+void (*showGuiPtr)(byte gui);
 void setCoreGuiShowPtr(void(*shwGuiPtr)(byte gui)){
   showGuiPtr = shwGuiPtr;
 }
-
-static void nextStep(){
-  switch(programmPosition){
-    case(POS_ENTER_PARAMS): programmPosition = POS_WEIGHING; break; 
-    //case(POS_WEIGHING): programmPosition = POS_WEIGHING; break;
-  }
+                                                                // ---------------
+void nextStep();                                                                
+                                                                // Ввод параметров
+void posEnterParams(){
+  programmPosition = POS_ENTER_PARAMS;
   showGuiPtr(programmPosition);
 }
-
-
 void setComponentsCount(byte compCount){
   componentsCount = limit( compCount, 1, MAX_COMP_COUNT);
 }
@@ -39,33 +36,50 @@ void setComponentWeight(byte compI,int weight){
 void setBlendTime(int blendT){
   blendTime = limit(blendT, 10, MAX_BLEND_TIME);
 }
-void confirmParametrs(){      //завершить ввод параметров и перейти к следующему шагу
-  paramsSetted = true;
+
+                                                                 // Взвешивание
+void resetTare(){
+  scale.tare();
 }
+void posWeighing(){
+  programmPosition = POS_WEIGHING;
+  componentNumber = 0;
+  scale.tare();
+}
+void weighing(){             
+  weight = getCellWeight();
+  showGuiPtr(POS_WEIGHING);
+}
+void weighingConfirm(){
+  if(componentNumber >= componentsCount)
+    nextStep();
+  else{
+    componentNumber++;
+    weighing();
+  }
+}
+                                                                //  -------------
 
-
-
-void resetProgramm(){              // Стартовое положение (ввод параметров)
-  programmPosition = POS_ENTER_PARAMS;
-  paramsSetted = false;
+// Сброс на стратовое положение
+void resetProgramm(){                                       
+  posEnterParams();
+}                                                              
+void nextStep(){
+  switch(programmPosition){
+    case(POS_ENTER_PARAMS): posWeighing(); break; 
+  }
   showGuiPtr(programmPosition);
 }
-void checkParams(){
-  if(paramsSetted)
-    nextStep();
+void confirm(){
+  switch(programmPosition){
+    case(POS_ENTER_PARAMS): nextStep(); break;
+    case(POS_WEIGHING): weighingConfirm(); break;
+  }
 }
-void weighing(){             // Начать изготовление (взвешивние -> смешивание)
-  
-}
-
-
 void runProgramm(){
   switch(programmPosition){
-    case(POS_ENTER_PARAMS): checkParams(); break;
     case(POS_WEIGHING): weighing(); break;
   }
 }
-
-
 
 #endif

@@ -11,13 +11,18 @@ void kursachDevicesInit() {
   pinMode(LED_G_PIN, OUTPUT);
   pinMode(LED_B_PIN, OUTPUT);
   
-
   for (int i = 0; i < BUTTONS_COUNT; i++) {
     pinMode(BUTTONS[i]->pin, INPUT_PULLUP);
   }
 
   lcd.init();
   lcd.backlight();
+
+  scale.begin(HX711_DT, HX711_SCK);
+  scale.set_scale();
+  scale.tare();
+  scale.set_scale(HX711_CALIBRATION_FACTOR);  
+
 }
 
 byte readButState(Button* but) {
@@ -76,12 +81,39 @@ void doLightShow() {
   digitalWrite(LED_G_PIN, lightTick % 5 == 0);
   digitalWrite(LED_B_PIN, lightTick % 6 == 0);
 }
-void lightsOff() {
-  digitalWrite(LED_R_PIN, HIGH);
-  digitalWrite(LED_G_PIN, HIGH);
-  digitalWrite(LED_B_PIN, HIGH);
+void setLights(byte r, byte g, byte b) {
+  digitalWrite(LED_R_PIN, r);
+  digitalWrite(LED_G_PIN, g);
+  digitalWrite(LED_B_PIN, b);
 }
 
 
+
+
+int flashPercent = -1;
+void percentagesToFlashing(){
+  if(flashPercent == -1) return;
+  if(flashPercent == 0) flashPercent = 1;
+  
+  if (flashPercent >= CAUTION_COMP_WEIGHT){
+    setLights(LOW, HIGH, HIGH); return;
+  }
+  if (flashPercent >= 100){
+    setLights(HIGH, LOW, HIGH); return;
+  }
+  
+  int flashtime = (100 - flashPercent)*20;
+  bool blue = fmod( (millis() / flashtime) , 2) < 1;
+  setLights(HIGH, HIGH, blue);
+}
+
+
+float getCellWeight(){
+  float units = 0;
+  for (int i = 0; i < HX711_MEASURE_COUNT; i ++) {
+    units = + scale.get_units(1);
+  }
+  return (units / HX711_MEASURE_COUNT) * CONVERSION_K_GRAM;
+}
 
 #endif

@@ -72,13 +72,15 @@ void pageSetBlendTime(){         // Ввод времени смешивания
   butPositive.ptrF = [](){ changeBlndTime(1); };
   butPositive.ptrFRepeat = [](){ changeBlndTime(1*BLEND_TIME_CHANGE_MUL); };
   
-  butEnter.ptrF = [](){
-    confirmParametrs();
-  };
+  butEnter.ptrF = confirm;
 }
 
 void pageWeighing(){
-  
+  lcdPrint("BЗBEШ KOMП " + String(componentNumber+1));
+  int prc = limit(weight / componentsWeights[componentNumber] * 100, 0, CAUTION_COMP_WEIGHT);
+  lcdPrint(String(prc) + "%",0,1);
+  lcdPrint(String((int)weight) + "/" + String(componentsWeights[componentNumber]) + "Г",6,1);
+  flashPercent = prc;
 }
 
 
@@ -89,15 +91,18 @@ void showGUI(byte gui){
   }
 }
 
+float perec = 50;
 
 void setup() {
   Serial.begin(19200);
   kursachDevicesInit();
   setCoreGuiShowPtr(showGUI);
   resetProgramm();
+
 }
 
 void loop() {
   handleButs();
+  //percentagesToFlashing();
   runProgramm();
 }

@@ -15,16 +15,17 @@ LCD_1602_RUS lcd(0x27, 16, 2, 0);
 #define HX711_DT 8
 #define HX711_SCK 9
 #define HX711_MEASURE_COUNT 3          // кол-во измерений для среднего
-#define HX711_CALIBRATION_FACTOR 7.6   // колибровочный коэфф
-const float HX711_ADJUSTED_CALIBRATION_FACTOR = 7.6 / (HX711_MEASURE_COUNT/10);
-const float CONVERSION_K_GRAM    = 0.35274; // для перевода из унций в граммы
-
-
+#define HX711_CALIBRATION_FACTOR 7.65   // колибровочный коэфф
+const float CONVERSION_K_GRAM    = 0.035274; // для перевода из унций в граммы
 HX711 scale;
+
+#define MOTOR 11
+
 
 #define BUT_READ_DELAY_MS 45
 #define BUT_AFTERPUSH_DELAY_MS 400
 #define BUT_REPEAT_DELAY_MS 75
+#define BUT_TIME_FOR_LONGPRESS 1000
 
 struct Button{
   byte pin;
@@ -51,6 +52,9 @@ const byte BUTTONS_COUNT = sizeof(BUTTONS) / sizeof(BUTTONS[0]);
 
 #define POS_ENTER_PARAMS 0
 #define POS_WEIGHING 1
+#define POS_BLENDING 2
+#define POS_END 3
+
 
 #define CAUTION_COMP_WEIGHT 110
 

@@ -23,6 +23,16 @@ void kursachDevicesInit() {
   scale.tare();
   scale.set_scale(HX711_CALIBRATION_FACTOR);  
 
+  pinMode(MOTOR, OUTPUT);
+  digitalWrite(10, LOW);
+}
+
+void resetButtons(){
+  for (int i = 0; i < BUTTONS_COUNT; i++) {
+    Button* but = BUTTONS[i];
+    but->ptrF = nullptr;
+    but->ptrFRepeat = nullptr;
+  }
 }
 
 byte readButState(Button* but) {
@@ -32,6 +42,10 @@ byte readButState(Button* but) {
     return digitalRead(but->pin);
   }
   return state;
+}
+
+bool isButlongPress(Button *but,void (*func)()){
+  return millis() - but->timeSave > BUT_TIME_FOR_LONGPRESS;
 }
 
 void handleButs() {
@@ -69,9 +83,13 @@ int limit(int val, int minVal, int maxVal){
   return val;
 }
 
-String intToTimeStr(int val){
+String addZeroToStr(int val){
   String s = String(val);
   return (val < 10) ? "0"+s : s;
+}
+
+String intToTimeStr(int val){
+  return addZeroToStr(val / 60) + ":" + addZeroToStr(val % 60);
 }
 
 void doLightShow() {
@@ -81,17 +99,19 @@ void doLightShow() {
   digitalWrite(LED_G_PIN, lightTick % 5 == 0);
   digitalWrite(LED_B_PIN, lightTick % 6 == 0);
 }
+
+
 void setLights(byte r, byte g, byte b) {
-  digitalWrite(LED_R_PIN, r);
-  digitalWrite(LED_G_PIN, g);
-  digitalWrite(LED_B_PIN, b);
+  if(r!=-1) digitalWrite(LED_R_PIN, r);
+  if(g!=-1) digitalWrite(LED_G_PIN, g);
+  if(b!=-1) digitalWrite(LED_B_PIN, b);
 }
 
+void setLightsOff() {
+  setLights(HIGH, HIGH, HIGH);
+}
 
-
-
-int flashPercent = -1;
-void percentagesToFlashing(){
+void percentagesToFlashing(float flashPercent){
   if(flashPercent == -1) return;
   if(flashPercent == 0) flashPercent = 1;
   
@@ -102,18 +122,25 @@ void percentagesToFlashing(){
     setLights(HIGH, LOW, HIGH); return;
   }
   
-  int flashtime = (100 - flashPercent)*20;
-  bool blue = fmod( (millis() / flashtime) , 2) < 1;
-  setLights(HIGH, HIGH, blue);
+  setLights(HIGH, HIGH, -1);
+  float fP = flashPercent / 100;
+  fP *= fP;
+  analogWrite(LED_B_PIN ,255 -  (255 * fP));
 }
-
 
 float getCellWeight(){
-  float units = 0;
-  for (int i = 0; i < HX711_MEASURE_COUNT; i ++) {
-    units = + scale.get_units(1);
-  }
-  return (units / HX711_MEASURE_COUNT) * CONVERSION_K_GRAM;
+  float units = scale.get_units(HX711_MEASURE_COUNT);
+  units/HX711_MEASURE_COUNT;
+  return units * CONVERSION_K_GRAM;
 }
+
+void turnOnMotor(){
+  digitalWrite(MOTOR, HIGH);
+}
+void turnOffMotor(){
+  digitalWrite(MOTOR, LOW);
+}
+
+
 
 #endif

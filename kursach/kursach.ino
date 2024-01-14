@@ -2,7 +2,8 @@
 #include "kursach_core.h"
 
 
-void pageStart(){
+void pageEnterParams(){
+  setLightsOff();
   lcd.clear();
   lcdPrint("CMEШAPИK 3500EXT");
   lcdPrint("BBOД ДЛЯ CTAPTA",0,1);
@@ -62,7 +63,7 @@ void pageSetBlendTime(){         // Ввод времени смешивания
   
   static auto changeBlndTime = [](int8_t directn){
     setBlendTime(blendTime + directn);
-    lcdPrint(intToTimeStr(blendTime / 60) + ":" + intToTimeStr(blendTime % 60),8,1);
+    lcdPrint(intToTimeStr(blendTime),8,1);
   };
   changeBlndTime(0);
 
@@ -77,32 +78,68 @@ void pageSetBlendTime(){         // Ввод времени смешивания
 
 void pageWeighing(){
   lcdPrint("BЗBEШ KOMП " + String(componentNumber+1));
-  int prc = limit(weight / componentsWeights[componentNumber] * 100, 0, CAUTION_COMP_WEIGHT);
+  byte prc = limit(weight / componentsWeights[componentNumber] * 100, 0, CAUTION_COMP_WEIGHT);
   lcdPrint(String(prc) + "%",0,1);
   lcdPrint(String((int)weight) + "/" + String(componentsWeights[componentNumber]) + "Г",6,1);
-  flashPercent = prc;
+  percentagesToFlashing(prc);
+
+  butPositive.ptrF = nullptr;
+  butPositive.ptrFRepeat = [](){
+   if(isButlongPress)
+    resetTare();
+  };
+
+  butNegative.ptrF = nullptr;
+  butNegative.ptrFRepeat = [](){
+   if(isButlongPress)
+    resetProgramm();
+  };
+
+  butEnter.ptrF = confirm;
+}
+
+void pageBlend(){
+  setLightsOff();
+  if(blendingTime == 0){
+    lcdPrint("BBOД ДЛЯ HAЧAЛA ");
+    lcdPrint("   CMEШИBAHИЯ   ",0,1);
+    return;
+  }
+
+  if(blendPaused){
+    lcdPrint("   CMEШИBAHИE   ");
+    lcdPrint("    HA ПAУЗE    ",0,1);
+  }else{
+    lcdPrint("ИДET CMEШИBAHИE ");
+    lcdPrint(intToTimeStr(blendingTime/1000) + " / " + intToTimeStr(blendTime) + "   ",0,1);
+  }
+  
+  butEnter.ptrF = confirm;
+}
+
+void pageEnd(){
+  lcdPrint("   CMEШИBAHИE   ");
+  lcdPrint("   ЗABEPШEHO    ",0,1);
 }
 
 
 void showGUI(byte gui){
   switch(gui){
-    case(POS_ENTER_PARAMS): pageStart(); break;
+    case(POS_ENTER_PARAMS): pageEnterParams(); break;
     case(POS_WEIGHING): pageWeighing(); break;
+    case(POS_BLENDING): pageBlend(); break;
+    case(POS_END): pageEnd(); break;
   }
 }
-
-float perec = 50;
 
 void setup() {
   Serial.begin(19200);
   kursachDevicesInit();
   setCoreGuiShowPtr(showGUI);
   resetProgramm();
-
 }
 
 void loop() {
   handleButs();
-  //percentagesToFlashing();
   runProgramm();
 }
